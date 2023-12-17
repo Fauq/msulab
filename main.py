@@ -23,8 +23,8 @@ textX = 860
 textY = 200
 timer = time.time()
 
-randx = [80, 720]
-randy = [80, 400, 720]
+randx = [67, 598]
+randy = [67, 333, 598]
 #m_arr = np.random.randint(0, 8, size=(2, 4))
 
 #print(m_arr)
@@ -54,14 +54,16 @@ player = pygame.rect.Rect(x, y, 25, 25)
 player1 = pygame.rect.Rect(x1, y1, 25, 25)
 
 def draw_grid():
-    blockSize = 160  # Set the size of the grid block
-    for x in range(0, 800, blockSize):
-        for y in range(0, 800, blockSize):
+    blockSize = 133  # Set the size of the grid block
+    for x in range(0, 665, blockSize):
+        for y in range(666 - blockSize, -1, -blockSize):
             rect = pygame.Rect(x, y, blockSize, blockSize)
             pygame.draw.rect(screen, (0, 0, 0), rect, 1)
+    pygame.draw.rect(screen, (0, 0, 0), (532, 666, 134, 134), 2)
+    pygame.draw.rect(screen, (0, 0, 0), (665, 532, 134, 134), 2)
 def fill_grid():
     # Fill the grid with the colors
-    blockSize = 159  # Set the size of the grid block
+    blockSize = 132  # Set the size of the grid block
     new_block = Block((255, 0, 0), blockSize, blockSize, random.choice(randx), random.choice(randy))
     block_group.add(new_block)
 
@@ -116,17 +118,26 @@ while running:
     x1 = x1 + joysticks[0].get_axis(2)*8
     y1 = y1 + joysticks[0].get_axis(3)*8 """
     # make a 4 by 1 matrix of the joystick inputs
+
     arr = np.array([joysticks[0].get_axis(0), joysticks[0].get_axis(1), joysticks[0].get_axis(2), joysticks[0].get_axis(3)])
     arr1 = np.array([joysticks[1].get_axis(0), joysticks[1].get_axis(1), joysticks[1].get_axis(2), joysticks[1].get_axis(3)])
 
     # make x and y the outputs of the matrix multiplication
     x, y = combine_inputs(arr)
     x1, y1 = combine_inputs(arr1)
-    x = x*50
-    y= y*50
-    x1 = x1*50
-    y1 = y1*50
-    if x < 0:
+    x *= 50
+    y *= 50
+    x1 *= 50
+    y1 *= 50
+    x = max(x, 0)
+    x = min(x, 775)
+    y = max(y, 0)
+    y = min(y, 775)
+    x1 = max(x1, 0)
+    x1 = min(x1, 775)
+    y1 = max(y1, 0)
+    y1 = min(y1, 775)
+    """if x < 0:
         x = 0
     if x > 775:
         x = 775
@@ -141,7 +152,7 @@ while running:
     if y1 < 0:
         y1 = 0
     if y1 > 775:
-        y1 = 775
+        y1 = 775"""
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
