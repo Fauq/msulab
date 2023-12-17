@@ -19,8 +19,8 @@ joysticks = [pygame.joystick.Joystick(x) for x in range(pygame.joystick.get_coun
 score_value = 0
 a = 0
 font = pygame.font.Font('freesansbold.ttf', 32)
-textX = 860
-textY = 200
+textX = 840
+textY = 120
 timer = time.time()
 
 randx = [67, 598]
@@ -59,8 +59,8 @@ def draw_grid():
         for y in range(666 - blockSize, -1, -blockSize):
             rect = pygame.Rect(x, y, blockSize, blockSize)
             pygame.draw.rect(screen, (0, 0, 0), rect, 1)
-    pygame.draw.rect(screen, (0, 0, 0), (532, 666, 134, 134), 2)
-    pygame.draw.rect(screen, (0, 0, 0), (665, 532, 134, 134), 2)
+    pygame.draw.rect(screen, (91, 219, 68), (532, 666, 134, 134), 2)
+    pygame.draw.rect(screen, (91, 219, 68), (665, 532, 134, 134), 2)
 def fill_grid():
     # Fill the grid with the colors
     blockSize = 132  # Set the size of the grid block
@@ -106,7 +106,7 @@ while running:
 
     s = block_group.sprites()[0]
     #control mouse with joystick
-    draw_text("Controllers: " + str(pygame.joystick.get_count()), font, pygame.Color("black"), 850, 10)
+    draw_text("Controllers: " + str(pygame.joystick.get_count()), font, pygame.Color("black"), 800, 10)
     player.topleft = (x, y)
     player1.topleft = (x1, y1)
     block_group.draw(screen)
