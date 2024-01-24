@@ -6,6 +6,7 @@ screen = pygame.display.set_mode((1150, 800))
 pygame.display.set_caption("Mouse Game")
 clock = pygame.time.Clock()
 running = True
+plugged = False
 import time
 import numpy as np
 
@@ -13,7 +14,11 @@ import numpy as np
 from pygame.locals import *
 
 pygame.joystick.init()
-joysticks = [pygame.joystick.Joystick(x) for x in range(pygame.joystick.get_count())]
+if pygame.joystick.get_count() > 0:
+    plugged = True
+    joysticks = [pygame.joystick.Joystick(x) for x in range(pygame.joystick.get_count())]
+else:
+    joysticks = []
 
 
 score_value = 0
@@ -84,6 +89,13 @@ def calc_score1():
     # norm
     dist = np.linalg.norm(np.array([blockPosx, blockPosy]) - np.array([x, y]))
     return int(100-dist)
+
+def checkSafe(topleft):
+    a, b= topleft
+    if a > 532 and b > 532:
+        return True
+    else:
+        return False 
     
 
 while(1==1):
@@ -118,13 +130,14 @@ while running:
     x1 = x1 + joysticks[0].get_axis(2)*8
     y1 = y1 + joysticks[0].get_axis(3)*8 """
     # make a 4 by 1 matrix of the joystick inputs
-
-    arr = np.array([joysticks[0].get_axis(0), joysticks[0].get_axis(1), joysticks[0].get_axis(2), joysticks[0].get_axis(3)])
-    arr1 = np.array([joysticks[1].get_axis(0), joysticks[1].get_axis(1), joysticks[1].get_axis(2), joysticks[1].get_axis(3)])
+    if plugged:
+        arr = np.array([joysticks[0].get_axis(0), joysticks[0].get_axis(1), joysticks[0].get_axis(2), joysticks[0].get_axis(3)])
+        arr1 = np.array([joysticks[1].get_axis(0), joysticks[1].get_axis(1), joysticks[1].get_axis(2), joysticks[1].get_axis(3)])
 
     # make x and y the outputs of the matrix multiplication
-    x, y = combine_inputs(arr)
-    x1, y1 = combine_inputs(arr1)
+    if plugged:
+        x, y = combine_inputs(arr)
+        x1, y1 = combine_inputs(arr1)
     x *= 50
     y *= 50
     x1 *= 50
