@@ -130,13 +130,13 @@ while running:
     x1 *= 50
     y1 *= 50
     x = max(x, 0)
-    x = min(x, 775)
+    x = min(x, 640)
     y = max(y, 0)
-    y = min(y, 775)
+    y = min(y, 640)
     x1 = max(x1, 0)
-    x1 = min(x1, 775)
+    x1 = min(x1, 640)
     y1 = max(y1, 0)
-    y1 = min(y1, 775)
+    y1 = min(y1, 640)
     """if x < 0:
         x = 0
     if x > 775:
