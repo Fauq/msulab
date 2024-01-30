@@ -2,7 +2,7 @@ import random
 import pygame
 
 pygame.init()
-screen = pygame.display.set_mode((1150, 800))
+screen = pygame.display.set_mode((1150, 670))
 pygame.display.set_caption("Mouse Game")
 clock = pygame.time.Clock()
 running = True
@@ -24,7 +24,7 @@ else:
 score_value = 0
 a = 0
 font = pygame.font.Font('freesansbold.ttf', 32)
-textX = 840
+textX = 945
 textY = 120
 timer = time.time()
 
@@ -55,8 +55,15 @@ x = 25
 y = 25
 x1 = 25
 y1 = 25
+v_x = 0
+v_y = 0
+v_x1 = 0
+v_y1 = 0
 player = pygame.rect.Rect(x, y, 25, 25)
 player1 = pygame.rect.Rect(x1, y1, 25, 25)
+
+def calc_newPos(v_x, v_y, x, y):
+    return (x + v_x, y + v_y)
 
 def draw_grid():
     blockSize = 133  # Set the size of the grid block
@@ -64,8 +71,9 @@ def draw_grid():
         for y in range(666 - blockSize, -1, -blockSize):
             rect = pygame.Rect(x, y, blockSize, blockSize)
             pygame.draw.rect(screen, (0, 0, 0), rect, 1)
-    pygame.draw.rect(screen, (91, 219, 68), (532, 666, 134, 134), 2)
+    #pygame.draw.rect(screen, (91, 219, 68), (532, 666, 134, 134), 2)
     pygame.draw.rect(screen, (91, 219, 68), (665, 532, 134, 134), 2)
+    pygame.draw.rect(screen, (91, 219, 68), (665, 0, 134, 134), 2)
 def fill_grid():
     # Fill the grid with the colors
     blockSize = 132  # Set the size of the grid block
@@ -118,8 +126,9 @@ while running:
 
     s = block_group.sprites()[0]
     #control mouse with joystick
-    draw_text("Controllers: " + str(pygame.joystick.get_count()), font, pygame.Color("black"), 800, 10)
-    player.topleft = (x, y)
+    draw_text("Controllers: " + str(pygame.joystick.get_count()), font, pygame.Color("black"), 900, 10)
+    x, y = player.topleft
+    player.topleft = calc_newPos(v_x, v_y, x, y)
     player1.topleft = (x1, y1)
     block_group.draw(screen)
     draw_grid()
@@ -136,9 +145,9 @@ while running:
 
     # make x and y the outputs of the matrix multiplication
     if plugged:
-        x, y = combine_inputs(arr)
-        x1, y1 = combine_inputs(arr1)
-    x *= 50
+        v_x, v_y = combine_inputs(arr)
+        v_x1, v_y1 = combine_inputs(arr1)
+    """x *= 50
     y *= 50
     x1 *= 50
     y1 *= 50
@@ -149,7 +158,7 @@ while running:
     x1 = max(x1, 0)
     x1 = min(x1, 640)
     y1 = max(y1, 0)
-    y1 = min(y1, 640)
+    y1 = min(y1, 640)"""
     """if x < 0:
         x = 0
     if x > 775:
