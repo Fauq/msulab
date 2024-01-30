@@ -129,6 +129,9 @@ while running:
     draw_text("Controllers: " + str(pygame.joystick.get_count()), font, pygame.Color("black"), 900, 10)
     x, y = player.topleft
     player.topleft = calc_newPos(v_x, v_y, x, y)
+    print(joysticks[0].get_axis(0), joysticks[0].get_axis(1))
+    #stick drift 
+    #out of bounds
     player1.topleft = (x1, y1)
     block_group.draw(screen)
     draw_grid()
@@ -147,6 +150,8 @@ while running:
     if plugged:
         v_x, v_y = combine_inputs(arr)
         v_x1, v_y1 = combine_inputs(arr1)
+    
+    
     """x *= 50
     y *= 50
     x1 *= 50
