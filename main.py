@@ -65,6 +65,8 @@ player1 = pygame.rect.Rect(x1, y1, 25, 25)
 def calc_newPos(v_x, v_y, x, y):
     return (x + v_x, y + v_y)
 
+
+
 def draw_grid():
     blockSize = 133  # Set the size of the grid block
     for x in range(0, 665, blockSize):
@@ -127,20 +129,27 @@ while running:
     s = block_group.sprites()[0]
     #control mouse with joystick
     draw_text("Controllers: " + str(pygame.joystick.get_count()), font, pygame.Color("black"), 900, 10)
-    x, y = player.topleft
-    player.topleft = calc_newPos(v_x, v_y, x, y)
-    print(joysticks[0].get_axis(0), joysticks[0].get_axis(1))
+    x, y = calc_newPos(v_x, v_y, x, y)
+    x1, y1 = calc_newPos(v_x1, v_y1, x1, y1)
+
+    #print(joysticks[0].get_axis(0), joysticks[0].get_axis(1))
     #stick drift 
-    #out of bounds
+    
+    # Restrict players within the playing area
+    x = max(min(x, 666), 532)
+    y = max(min(y, 666), 532)
+    x1 = max(min(x1, 666), 532)
+    y1 = max(min(y1, 666), 532)
+
+    # Update player positions
+    
+    player.topleft = (x, y)
     player1.topleft = (x1, y1)
     block_group.draw(screen)
     draw_grid()
     pygame.draw.rect(screen, (0, 128, 255), player)
     pygame.draw.rect(screen, (0, 255, 0), player1)
-    """x = x + joysticks[0].get_axis(0)*8
-    y = y + joysticks[0].get_axis(1)*8
-    x1 = x1 + joysticks[0].get_axis(2)*8
-    y1 = y1 + joysticks[0].get_axis(3)*8 """
+
     # make a 4 by 1 matrix of the joystick inputs
     if plugged:
         arr = np.array([joysticks[0].get_axis(0), joysticks[0].get_axis(1), joysticks[0].get_axis(2), joysticks[0].get_axis(3)])
@@ -151,35 +160,7 @@ while running:
         v_x, v_y = combine_inputs(arr)
         v_x1, v_y1 = combine_inputs(arr1)
     
-    
-    """x *= 50
-    y *= 50
-    x1 *= 50
-    y1 *= 50
-    x = max(x, 0)
-    x = min(x, 640)
-    y = max(y, 0)
-    y = min(y, 640)
-    x1 = max(x1, 0)
-    x1 = min(x1, 640)
-    y1 = max(y1, 0)
-    y1 = min(y1, 640)"""
-    """if x < 0:
-        x = 0
-    if x > 775:
-        x = 775
-    if y < 0:
-        y = 0
-    if y > 775:
-        y = 775
-    if x1 < 0:
-        x1 = 0
-    if x1 > 775:
-        x1 = 775
-    if y1 < 0:
-        y1 = 0
-    if y1 > 775:
-        y1 = 775"""
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
