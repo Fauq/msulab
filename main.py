@@ -75,7 +75,7 @@ def draw_grid():
             pygame.draw.rect(screen, (0, 0, 0), rect, 1)
     #pygame.draw.rect(screen, (91, 219, 68), (532, 666, 134, 134), 2)
     pygame.draw.rect(screen, (91, 219, 68), (665, 532, 134, 134), 2)
-    pygame.draw.rect(screen, (91, 219, 68), (665, 0, 134, 134), 2)
+    pygame.draw.rect(screen, (0, 128, 255), (665, 0, 134, 134), 2)
 def fill_grid():
     # Fill the grid with the colors
     blockSize = 132  # Set the size of the grid block
@@ -122,6 +122,26 @@ def draw_text(text, font, text_col, x, y):
 def combine_inputs(arr):
     return m_arr @ arr
 
+def checkDrift(axis):
+    if abs(axis) < 0.1:
+        return 0
+    else:
+        return axis
+    
+def checkBounds(x, y, player):
+    if player:
+        if x < 0:
+            x = 0
+        elif x > 799 and y < 134:
+            x = 799
+        if y < 0:
+            y = 0
+        elif y > 134 and x > 665:
+            x = 665
+        elif y > 640:
+            y = 640
+    return (x, y)
+
 
 while running:
 
@@ -132,14 +152,12 @@ while running:
     x, y = calc_newPos(v_x, v_y, x, y)
     x1, y1 = calc_newPos(v_x1, v_y1, x1, y1)
 
+
     #print(joysticks[0].get_axis(0), joysticks[0].get_axis(1))
     #stick drift 
-    
+
     # Restrict players within the playing area
-    x = max(min(x, 666), 532)
-    y = max(min(y, 666), 532)
-    x1 = max(min(x1, 666), 532)
-    y1 = max(min(y1, 666), 532)
+    x, y = checkBounds(x, y, True)
 
     # Update player positions
     
@@ -152,8 +170,8 @@ while running:
 
     # make a 4 by 1 matrix of the joystick inputs
     if plugged:
-        arr = np.array([joysticks[0].get_axis(0), joysticks[0].get_axis(1), joysticks[0].get_axis(2), joysticks[0].get_axis(3)])
-        arr1 = np.array([joysticks[1].get_axis(0), joysticks[1].get_axis(1), joysticks[1].get_axis(2), joysticks[1].get_axis(3)])
+        arr = np.array([checkDrift(joysticks[0].get_axis(0)), checkDrift(joysticks[0].get_axis(1)), checkDrift(joysticks[0].get_axis(2)), checkDrift(joysticks[0].get_axis(3))])
+        arr1 = np.array([checkDrift(joysticks[1].get_axis(0)), checkDrift(joysticks[1].get_axis(1)), checkDrift(joysticks[1].get_axis(2)), checkDrift(joysticks[1].get_axis(3))])
 
     # make x and y the outputs of the matrix multiplication
     if plugged:
