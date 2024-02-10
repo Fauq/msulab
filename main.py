@@ -65,7 +65,13 @@ player1 = pygame.rect.Rect(x1, y1, 25, 25)
 def calc_newPos(v_x, v_y, x, y):
     return (x + v_x, y + v_y)
 
+#flag only appear away from safe zone
+#record data of inputs every game in a list
+#append data at every 10 ms to a list - joystick and velocity info and positions of the players
+#posotion of flag and time it took to get it
+#save data to a file
 
+#write code to do that above 
 
 def draw_grid():
     blockSize = 133  # Set the size of the grid block
@@ -78,7 +84,7 @@ def draw_grid():
     pygame.draw.rect(screen, (0, 128, 255), (665, 0, 134, 134), 2)
 def fill_grid():
     # Fill the grid with the colors
-    blockSize = 132  # Set the size of the grid block
+    blockSize = 50  # Set the size of the grid block
     new_block = Block((255, 0, 0), blockSize, blockSize, random.choice(randx), random.choice(randy))
     block_group.add(new_block)
 
@@ -130,15 +136,20 @@ def checkDrift(axis):
     
 def checkBounds(x, y, player):
     if player:
+        print(x, y)
         if x < 0:
             x = 0
-        elif x > 799 and y < 134:
-            x = 799
+        if x > 774 and y <= 108:
+            x = 774
+        if x > 687 and y > 108:
+            y = 108
+        if x > 774:
+            x = 774
         if y < 0:
             y = 0
-        elif y > 134 and x > 665:
-            x = 665
-        elif y > 640:
+        if y > 115 and x > 640:
+            x = 640
+        if y > 640:
             y = 640
     return (x, y)
 
