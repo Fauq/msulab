@@ -7,6 +7,7 @@ pygame.display.set_caption("Mouse Game")
 clock = pygame.time.Clock()
 running = True
 plugged = False
+captured = False
 import time
 import numpy as np
 
@@ -134,6 +135,13 @@ def checkDrift(axis):
     else:
         return axis
     
+def isSafe_player(x, y):
+    if x > 700 and y > 108:
+        return True
+    else:
+        return False
+    
+    
 def checkBounds(x, y, player):
     if player:
         print(x, y)
@@ -151,6 +159,20 @@ def checkBounds(x, y, player):
             x = 640
         if y > 640:
             y = 640
+    else: 
+        if x < 0:
+            x = 0
+        if y < 532 and x > 640:
+            x = 640
+        if x > 687 and y < 532:
+            y = 532
+        if x > 774:
+            x = 774
+        if y < 0:
+            y = 0
+        if y > 640:
+            y = 640
+        
     return (x, y)
 
 
@@ -198,15 +220,14 @@ while running:
 
     # problem, block spawns in the same place as the last one
     if (s.checkMouse(player.topleft)):
-        if (time.time()-timer > 5):
-            print(time.time()-timer)
-            timer = time.time()
+        if not captured:
+            captured = True
+            player.change_color((255, 0, 0))
             sc = calc_score()
             s.kill()
             screen.fill((255, 255, 255))
             a = 0
             draw_grid()
-            fill_grid()
             block_group.draw(screen)
             score_value += sc
 
@@ -224,7 +245,11 @@ while running:
             score_value += sc
     # second controller
     # safe zone
-    
+    if isSafe_player(player):
+        captured = False
+        player.change_color((0, 128, 255))
+        fill_grid()
+        block_group.draw(screen)
 
     clock.tick(60)
     point = pygame.mouse.get_pos()
