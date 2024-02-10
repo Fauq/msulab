@@ -8,6 +8,7 @@ clock = pygame.time.Clock()
 running = True
 plugged = False
 captured = False
+color = (0, 0, 255)
 import time
 import numpy as np
 
@@ -134,9 +135,10 @@ def checkDrift(axis):
         return 0
     else:
         return axis
+
     
 def isSafe_player(x, y):
-    if x > 700 and y > 108:
+    if x > 700 and y < 108:
         return True
     else:
         return False
@@ -178,8 +180,8 @@ def checkBounds(x, y, player):
 
 while running:
 
-
-    s = block_group.sprites()[0]
+    if block_group.sprites():
+        s = block_group.sprites()[0]
     #control mouse with joystick
     draw_text("Controllers: " + str(pygame.joystick.get_count()), font, pygame.Color("black"), 900, 10)
     x, y = calc_newPos(v_x, v_y, x, y)
@@ -191,14 +193,16 @@ while running:
 
     # Restrict players within the playing area
     x, y = checkBounds(x, y, True)
+    x1, y1 = checkBounds(x1, y1, False)
 
     # Update player positions
     
     player.topleft = (x, y)
     player1.topleft = (x1, y1)
-    block_group.draw(screen)
+    if not captured:
+        block_group.draw(screen)
     draw_grid()
-    pygame.draw.rect(screen, (0, 128, 255), player)
+    pygame.draw.rect(screen, color, player)
     pygame.draw.rect(screen, (0, 255, 0), player1)
 
     # make a 4 by 1 matrix of the joystick inputs
@@ -222,13 +226,13 @@ while running:
     if (s.checkMouse(player.topleft)):
         if not captured:
             captured = True
-            player.change_color((255, 0, 0))
+            color = (255, 0, 0)
             sc = calc_score()
             s.kill()
             screen.fill((255, 255, 255))
             a = 0
             draw_grid()
-            block_group.draw(screen)
+            fill_grid()
             score_value += sc
 
     if (s.checkMouse(player1.topleft)):
@@ -245,10 +249,10 @@ while running:
             score_value += sc
     # second controller
     # safe zone
-    if isSafe_player(player):
+    if isSafe_player(x, y):
         captured = False
-        player.change_color((0, 128, 255))
-        fill_grid()
+        color = (0, 0, 255)
+        a = 0
         block_group.draw(screen)
 
     clock.tick(60)
