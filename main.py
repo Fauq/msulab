@@ -1,5 +1,8 @@
 import random
 import pygame
+import time
+import numpy as np
+from pygame.locals import *
 
 pygame.init()
 screen = pygame.display.set_mode((1150, 670))
@@ -9,11 +12,10 @@ running = True
 plugged = False
 captured = False
 color = (0, 0, 255)
-import time
-import numpy as np
+
 
 #joystick
-from pygame.locals import *
+
 
 pygame.joystick.init()
 if pygame.joystick.get_count() > 0:
@@ -30,7 +32,7 @@ textX = 945
 textY = 120
 timer = time.time()
 
-randx = [67, 598]
+randx = [67, 200]
 randy = [67, 333, 598]
 #m_arr = np.random.randint(0, 8, size=(2, 4))
 
@@ -53,10 +55,12 @@ class Block(pygame.sprite.Sprite):
             return True
 
 block_group = pygame.sprite.Group()
-x = 25
-y = 25
-x1 = 25
-y1 = 25
+# initial position of players
+x = 700
+y = 50
+x1 = 700
+y1 = 600
+# initial velocity of players
 v_x = 0
 v_y = 0
 v_x1 = 0
@@ -67,7 +71,6 @@ player1 = pygame.rect.Rect(x1, y1, 25, 25)
 def calc_newPos(v_x, v_y, x, y):
     return (x + v_x, y + v_y)
 
-#flag only appear away from safe zone
 #record data of inputs every game in a list
 #append data at every 10 ms to a list - joystick and velocity info and positions of the players
 #posotion of flag and time it took to get it
@@ -235,18 +238,15 @@ while running:
             fill_grid()
             score_value += sc
 
-    if (s.checkMouse(player1.topleft)):
-        if (time.time()-timer > 5):
-            print(time.time()-timer)
-            timer = time.time()
-            sc = calc_score1()
-            s.kill()
-            screen.fill((255, 255, 255))
-            a = 0
-            draw_grid()
-            fill_grid()
-            block_group.draw(screen)
-            score_value += sc
+    if (player1.colliderect(player) and not captured):
+        sc = calc_score1()
+        s.kill()
+        screen.fill((255, 255, 255))
+        a = 0
+        draw_grid()
+        fill_grid()
+        block_group.draw(screen)
+        score_value += sc
     # second controller
     # safe zone
     if isSafe_player(x, y):
