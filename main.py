@@ -238,15 +238,16 @@ while running:
             fill_grid()
             score_value += sc
 
-    if (player1.colliderect(player) and not captured):
-        sc = calc_score1()
+    if (player1.colliderect(player) and captured):
+        captured = False
+        color = (0, 0, 255)
+        """sc = calc_score1()
         s.kill()
         screen.fill((255, 255, 255))
         a = 0
         draw_grid()
         fill_grid()
-        block_group.draw(screen)
-        score_value += sc
+        score_value += sc"""
     # second controller
     # safe zone
     if isSafe_player(x, y):
