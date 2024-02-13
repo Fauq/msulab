@@ -12,7 +12,7 @@ running = True
 plugged = False
 captured = False
 color = (0, 0, 255)
-trial = 0
+trial = 1
 
 
 #joystick
@@ -82,9 +82,21 @@ def calc_newPos(v_x, v_y, x, y):
 
 #change player1 to circle 
 #add a circle radius around player and flag to show capture radius 
+#time score should be 0 for losing player
 
+# person whos capturing is the attacker/player
+# person who is defending is defender 
 
+# 4 scoring conditions 
 
+# 1. player brought back flag (player full points, defender 0)
+# 2. defender intercepts (defender full points, player 0)
+# 3. time runs out (defender 75% of points, player 0) 
+# 4. player captures flag but dont bring it back (player 25% of points, defender 0)
+
+#timing score 
+# player score: 20 - time it took for player to capture flag 
+# defender: the time elapsed (or trial time)
 def draw_grid():
     blockSize = 133  # Set the size of the grid block
     for x in range(0, 665, blockSize):
@@ -102,11 +114,11 @@ def fill_grid():
 
 def show_score1(x, y):
     score = font.render("Player Score: " + str(score_value), True, (255, 0, 0))
-    screen.blit(score, (x-50, y))
+    screen.blit(score, (x-75, y))
 
 def show_score2(x, y):
     score = font.render("Attacker Score: " + str(score_value1), True, (255, 0, 0))
-    screen.blit(score, (x-75, y+50))
+    screen.blit(score, (x-95, y+50))
 
 def show_time():
     score = font.render("Time: " + str(int(time.time() - timer)), True, (0, 0, 0))
@@ -163,7 +175,7 @@ def checkDrift(axis):
 
     
 def isSafe_player(x, y):
-    if x > 700 and y < 108:
+    if x > 700 and y < 108 and captured == True:
         return True
     else:
         return False
@@ -260,13 +272,11 @@ while running:
         if not captured:
             captured = True
             color = (255, 0, 0)
-            sc = calc_score()
             s.kill()
             screen.fill((255, 255, 255))
             a = 0
             draw_grid()
             fill_grid()
-            score_value += sc
 
     if (np.linalg.norm(np.array([x, y]) - np.array([x1, y1])) < 30):
         captured = False
@@ -288,6 +298,8 @@ while running:
     # second controller
     # safe zone
     if isSafe_player(x, y):
+        trial += 1
+        score_value += (20-int(time.time() - timer))
         x1 = 700
         y1 = 600
         captured = False
