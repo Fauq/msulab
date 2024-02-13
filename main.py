@@ -12,6 +12,7 @@ running = True
 plugged = False
 captured = False
 color = (0, 0, 255)
+trial = 0
 
 
 #joystick
@@ -110,6 +111,10 @@ def show_score2(x, y):
 def show_time():
     score = font.render("Time: " + str(int(time.time() - timer)), True, (0, 0, 0))
     screen.blit(score, (textX, textY-50))
+
+def show_trial():
+    score = font.render("Trial: " + str(trial), True, (0, 0, 0))
+    screen.blit(score, (textX, 500))
 
 def calc_time():
     return int(time.time() - timer)
@@ -271,6 +276,7 @@ while running:
         y = 50
         x1 = 700
         y1 = 600
+        trial += 1
 
         """sc = calc_score1()
         s.kill()
@@ -299,6 +305,7 @@ while running:
     show_score1(textX, textY)
     show_score2(textX, textY)
     show_time()
+    show_trial()
     pygame.display.flip()
     screen.fill((255, 255, 255))
 
