@@ -41,7 +41,7 @@ randy = [67, 333, 598]
 
 
 m_arr = np.array([[3,0,7,5],[0,1,7,2]])
-m_arr = 3*m_arr
+m_arr = 2*m_arr
 class Block(pygame.sprite.Sprite):
     def __init__(self, color, width, height, x, y):
         super().__init__()
@@ -52,7 +52,8 @@ class Block(pygame.sprite.Sprite):
         self.rect.center = (x, y)
 
     def checkMouse(self, pos):
-        if self.rect.collidepoint(pos):
+        x , y = pos
+        if np.linalg.norm(np.array([x, y]) - np.array([self.rect.centerx, self.rect.centery])) < 80:
             return True
 
 block_group = pygame.sprite.Group()
@@ -70,15 +71,18 @@ player = pygame.rect.Rect(x, y, 25, 25)
 player1 = pygame.rect.Rect(x1, y1, 25, 25)
 
 def calc_newPos(v_x, v_y, x, y):
+
     return (x + v_x, y + v_y)
 
 #record data of inputs every game in a list
 #append data at every 10 ms to a list - joystick and velocity info and positions of the players
 #posotion of flag and time it took to get it
 #save data to a file
-#add radius to flag using norm function from numpy
 
-#write code to do that above 
+#change player1 to circle 
+#add a circle radius around player and flag to show capture radius 
+
+
 
 def draw_grid():
     blockSize = 133  # Set the size of the grid block
@@ -231,6 +235,14 @@ while running:
         v_x, v_y = combine_inputs(arr)
         v_x1, v_y1 = combine_inputs(arr1)
     
+    if (v_x > 3):
+        v_x = 3
+    if (v_y > 3):
+        v_y = 3
+    if (v_x1 > 3):
+        v_x1 = 3
+    if (v_y1 > 3):
+        v_y1 = 3
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -251,7 +263,7 @@ while running:
             fill_grid()
             score_value += sc
 
-    if (player1.colliderect(player) and captured):
+    if (np.linalg.norm(np.array([x, y]) - np.array([x1, y1])) < 30):
         captured = False
         color = (0, 0, 255)
         timer = time.time()
