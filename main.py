@@ -26,6 +26,7 @@ else:
 
 
 score_value = 0
+score_value1 = 0
 a = 0
 font = pygame.font.Font('freesansbold.ttf', 32)
 textX = 945
@@ -75,6 +76,7 @@ def calc_newPos(v_x, v_y, x, y):
 #append data at every 10 ms to a list - joystick and velocity info and positions of the players
 #posotion of flag and time it took to get it
 #save data to a file
+#add radius to flag using norm function from numpy
 
 #write code to do that above 
 
@@ -93,9 +95,20 @@ def fill_grid():
     new_block = Block((255, 0, 0), blockSize, blockSize, random.choice(randx), random.choice(randy))
     block_group.add(new_block)
 
-def show_score(x, y):
-    score = font.render("Score: " + str(score_value), True, (255, 0, 0))
-    screen.blit(score, (x, y))
+def show_score1(x, y):
+    score = font.render("Player Score: " + str(score_value), True, (255, 0, 0))
+    screen.blit(score, (x-50, y))
+
+def show_score2(x, y):
+    score = font.render("Attacker Score: " + str(score_value1), True, (255, 0, 0))
+    screen.blit(score, (x-75, y+50))
+
+def show_time():
+    score = font.render("Time: " + str(int(time.time() - timer)), True, (0, 0, 0))
+    screen.blit(score, (textX, textY-50))
+
+def calc_time():
+    return int(time.time() - timer)
 
 def calc_score():
     x, y = player.topleft
@@ -241,6 +254,12 @@ while running:
     if (player1.colliderect(player) and captured):
         captured = False
         color = (0, 0, 255)
+        timer = time.time()
+        x = 700
+        y = 50
+        x1 = 700
+        y1 = 600
+
         """sc = calc_score1()
         s.kill()
         screen.fill((255, 255, 255))
@@ -251,15 +270,32 @@ while running:
     # second controller
     # safe zone
     if isSafe_player(x, y):
+        x1 = 700
+        y1 = 600
         captured = False
+        timer = time.time()
         color = (0, 0, 255)
         a = 0
         block_group.draw(screen)
 
+    # time doesnt start counting until both players leave the safe zone
+    if (x > 665 and y < 134 and x1 > 665 and y1 > 532):
+       timer = time.time()
+
     clock.tick(60)
     point = pygame.mouse.get_pos()
-    show_score(textX, textY)
+    show_score1(textX, textY)
+    show_score2(textX, textY)
+    show_time()
     pygame.display.flip()
     screen.fill((255, 255, 255))
+
+    if (calc_time() > 20):
+        x = 700
+        y = 50
+        x1 = 700
+        y1 = 600
+        captured = False
+        timer = time.time()
 
 pygame.quit()
