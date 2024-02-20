@@ -3,6 +3,7 @@ import pygame
 import time
 import numpy as np
 from pygame.locals import *
+import json 
 
 pygame.init()
 screen = pygame.display.set_mode((1150, 670))
@@ -13,6 +14,8 @@ plugged = False
 captured = False
 color = (0, 0, 255)
 trial = 1
+game_data = []
+start_time = time.time()
 
 
 #joystick
@@ -26,8 +29,8 @@ else:
     joysticks = []
 
 
-score_value = 0
-score_value1 = 0
+player_score = 0
+defender_score = 0
 a = 0
 font = pygame.font.Font('freesansbold.ttf', 32)
 textX = 945
@@ -113,11 +116,11 @@ def fill_grid():
     block_group.add(new_block)
 
 def show_score1(x, y):
-    score = font.render("Player Score: " + str(score_value), True, (255, 0, 0))
+    score = font.render("Player Score: " + str(player_score), True, (255, 0, 0))
     screen.blit(score, (x-75, y))
 
 def show_score2(x, y):
-    score = font.render("Attacker Score: " + str(score_value1), True, (255, 0, 0))
+    score = font.render("Defender Score: " + str(defender_score), True, (255, 0, 0))
     screen.blit(score, (x-95, y+50))
 
 def show_time():
@@ -131,19 +134,25 @@ def show_trial():
 def calc_time():
     return int(time.time() - timer)
 
-def calc_score():
-    x, y = player.topleft
-    blockPosx, blockPosy = block_group.sprites()[0].rect.center
-    # norm
-    dist = np.linalg.norm(np.array([blockPosx, blockPosy]) - np.array([x, y]))
-    return int(100-dist)
+def calc_scorePlayer(senario, time):
+    timeScore = (20-int(time.time() - timer))
+    if senario == 1:
+        return 20 + timeScore
+    if senario == 2 or senario == 3:
+        return timeScore 
+    if senario == 4:
+        return timeScore + 0.25*20
 
-def calc_score1():
-    x, y = player1.topleft
-    blockPosx, blockPosy = block_group.sprites()[0].rect.center
-    # norm
-    dist = np.linalg.norm(np.array([blockPosx, blockPosy]) - np.array([x, y]))
-    return int(100-dist)
+def calc_scoreDefender(senario, time):
+    timeScore = int(time.time() - timer)
+    if senario == 1:
+        return timeScore
+    if senario == 2:
+        return 20 + timeScore
+    if senario == 3:
+        return 0.75*20 + timeScore
+    if senario == 4:
+        return timeScore     
 
 def checkSafe(topleft):
     a, b= topleft
@@ -216,6 +225,16 @@ def checkBounds(x, y, player):
 
 
 while running:
+
+    if time.time() - timer >= 0.01:
+        game_data.append( {
+            'joystick': [joysticks[0].get_axis(0), joysticks[0].get_axis(1), joysticks[0].get_axis(2), joysticks[0].get_axis(3)],
+            'velocity': [v_x, v_y, v_x1, v_y1],
+            'position': [(x, y), (x1, y1)],
+            'flag': block_group.sprites()[0].rect.center,
+        })
+    
+    start_time = time.time()
 
     if block_group.sprites():
         s = block_group.sprites()[0]
@@ -299,9 +318,12 @@ while running:
     # safe zone
     if isSafe_player(x, y):
         trial += 1
-        score_value += (20-int(time.time() - timer))
+        player_score += (20-int(time.time() - timer))
         x1 = 700
         y1 = 600
+        game_data.append({
+            'time_to_capture': int(time.time() - timer),
+        })
         captured = False
         timer = time.time()
         color = (0, 0, 255)
@@ -328,5 +350,7 @@ while running:
         y1 = 600
         captured = False
         timer = time.time()
+    
+    
 
 pygame.quit()
