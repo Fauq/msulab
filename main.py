@@ -226,7 +226,7 @@ def checkBounds(x, y, player):
 
 while running:
 
-    if time.time() - timer >= 0.01:
+    if plugged and time.time() - timer >= 0.01:
         game_data.append( {
             'joystick': [joysticks[0].get_axis(0), joysticks[0].get_axis(1), joysticks[0].get_axis(2), joysticks[0].get_axis(3)],
             'velocity': [v_x, v_y, v_x1, v_y1],
