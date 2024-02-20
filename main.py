@@ -4,6 +4,7 @@ import time
 import numpy as np
 from pygame.locals import *
 import json 
+import csv
 
 pygame.init()
 screen = pygame.display.set_mode((1150, 670))
@@ -16,8 +17,14 @@ color = (0, 0, 255)
 trial = 1
 game_data = []
 start_time = time.time()
+path = 'DaqCpp/record'
+arr = []
+arr1 = []
 
-
+with open (path + 'pose.csv', 'r') as file: 
+    reader = csv.reader(file)
+    arr = next(reader)
+    arr1 = next(reader)
 #joystick
 
 
@@ -262,10 +269,10 @@ while running:
     pygame.draw.rect(screen, (0, 255, 0), player1)
 
     # make a 4 by 1 matrix of the joystick inputs
-    if plugged:
+    """if plugged:
         arr = np.array([checkDrift(joysticks[0].get_axis(0)), checkDrift(joysticks[0].get_axis(1)), checkDrift(joysticks[0].get_axis(2)), checkDrift(joysticks[0].get_axis(3))])
         arr1 = np.array([checkDrift(joysticks[1].get_axis(0)), checkDrift(joysticks[1].get_axis(1)), checkDrift(joysticks[1].get_axis(2)), checkDrift(joysticks[1].get_axis(3))])
-
+"""
     # make x and y the outputs of the matrix multiplication
     if plugged:
         v_x, v_y = combine_inputs(arr)
