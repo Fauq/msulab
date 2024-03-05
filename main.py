@@ -55,6 +55,7 @@ randy = [67, 333, 598]
 
 #m_arr = np.array([[3,0,7,5],[0,1,7,2]])
 m_arr = np.array([[-5.33247879150843e-05,3.55507427725192e-05,-0.000668516195280432, -0.000631942988468327,	-0.00143781984715076,	-0.000691431808599448,	0.00276886989301726,	0.00395505401419451,	0.00355954996564003,	-3.74330758317242e-05,	0.00697306630302672,	0.00893695172258586,	0.00804325691094529,	7.00739928822353e-05,	0.00569227277209805,	0.00746988789276899,	0.00672289803153796,	-1.85044318698863e-05,	0.00504560935962856,	0.00635550797765998,	0.00571995714367466],[0.00136859144602875,	-0.000912386033903697,	0.0166398580212531,	0.0170947439600576,	0.0340428744699597,	0.00160655988197229,	-0.00393386205170458,	-0.00561862284449718,	-0.00505676166756256,	0.00249110872571687,	0.00729916518055413,	0.0119279744390449,	0.0107351844138503,	0.000686843168696682,	-0.00687439142765975,	-0.00889586604750950,	-0.00800629000198628,	7.84883340792437e-05,	0.00127624416230591,	0.00281448125397012,	0.00253303203980908]])
+print(m_arr.shape)
 class Block(pygame.sprite.Sprite):
     def __init__(self, color, width, height, x, y):
         super().__init__()
@@ -191,7 +192,6 @@ def draw_text(text, font, text_col, x, y):
   screen.blit(img, (x, y))
 
 def combine_inputs(arr):
-    print(arr)
     print(m_arr @ arr)
     return m_arr @ arr
 
@@ -246,6 +246,9 @@ while running:
     arr = readValues()
     arr = np.array(arr)
     arr = arr.astype(np.float64)
+
+    if (arr.shape == (21,)):
+        newarr = arr.reshape(21, 1)
     if plugged and time.time() - timer >= 0.01:
         game_data.append( {
             'joystick': [joysticks[0].get_axis(0), joysticks[0].get_axis(1), joysticks[0].get_axis(2), joysticks[0].get_axis(3)],
@@ -287,18 +290,13 @@ while running:
         arr1 = np.array([checkDrift(joysticks[1].get_axis(0)), checkDrift(joysticks[1].get_axis(1)), checkDrift(joysticks[1].get_axis(2)), checkDrift(joysticks[1].get_axis(3))])
 """
     # make x and y the outputs of the matrix multiplication
-    
-    v_x, v_y = combine_inputs(arr)
+   
+    if (newarr.shape == (21, 1)):
+        v_x, v_y = combine_inputs(newarr)
+        v_x = v_x*10
+        v_y = v_y*10
+        print(v_x, v_y)
         #v_x1, v_y1 = combine_inputs(arr1)
-    
-    if (v_x > 3):
-        v_x = 3
-    if (v_y > 3):
-        v_y = 3
-    if (v_x1 > 3):
-        v_x1 = 3
-    if (v_y1 > 3):
-        v_y1 = 3
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -317,7 +315,7 @@ while running:
             draw_grid()
             fill_grid()
 
-    if (np.linalg.norm(np.array([x, y]) - np.array([x1, y1])) < 30):
+    """if (np.linalg.norm(np.array([x, y]) - np.array([x1, y1])) < 30):
         captured = False
         color = (0, 0, 255)
         timer = time.time()
@@ -325,9 +323,9 @@ while running:
         y = 50
         x1 = 700
         y1 = 600
-        trial += 1
+        trial += 1"""
 
-        """sc = calc_score1()
+    """sc = calc_score1()
         s.kill()
         screen.fill((255, 255, 255))
         a = 0
