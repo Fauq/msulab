@@ -263,16 +263,15 @@ while running:
         s = block_group.sprites()[0]
     #control mouse with joystick
     draw_text("Controllers: " + str(pygame.joystick.get_count()), font, pygame.Color("black"), 900, 10)
-    x, y = calc_newPos(v_x, v_y, x, y)
-    x1, y1 = calc_newPos(v_x1, v_y1, x1, y1)
+    ##x, y = calc_newPos(v_x, v_y, x, y)
+    ##x1, y1 = calc_newPos(v_x1, v_y1, x1, y1)
 
 
     #print(joysticks[0].get_axis(0), joysticks[0].get_axis(1))
     #stick drift 
 
     # Restrict players within the playing area
-    x, y = checkBounds(x, y, True)
-    x1, y1 = checkBounds(x1, y1, False)
+
 
     # Update player positions
     
@@ -292,11 +291,15 @@ while running:
     # make x and y the outputs of the matrix multiplication
    
     if (newarr.shape == (21, 1)):
-        v_x, v_y = combine_inputs(newarr)
-        v_x = v_x*10
-        v_y = v_y*10
-        print(v_x, v_y)
+        x, y = combine_inputs(newarr)
+        x = x*150
+        y = y*150
+        
         #v_x1, v_y1 = combine_inputs(arr1)
+    
+    x, y = checkBounds(x, y, True)
+    x1, y1 = checkBounds(x1, y1, False)
+    print(x, y)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -352,6 +355,19 @@ while running:
     if (x > 665 and y < 134 and x1 > 665 and y1 > 532):
        timer = time.time()
 
+
+    if (calc_time() > 20):
+        x = 700
+        y = 50
+        player.topleft=(x,y)
+        
+        x1 = 700
+        y1 = 600
+        captured = False
+        color = (0, 0, 255)
+        time.sleep(5)
+        timer = time.time()
+    
     clock.tick(60)
     point = pygame.mouse.get_pos()
     show_score1(textX, textY)
@@ -360,15 +376,5 @@ while running:
     show_trial()
     pygame.display.flip()
     screen.fill((255, 255, 255))
-
-    if (calc_time() > 20):
-        x = 700
-        y = 50
-        x1 = 700
-        y1 = 600
-        captured = False
-        timer = time.time()
-    
-    
 
 pygame.quit()
