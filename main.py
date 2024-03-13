@@ -10,7 +10,7 @@ import os
 
 pygame.init()
 screen = pygame.display.set_mode((1150, 670))
-pygame.display.set_caption("Mouse Game")
+pygame.display.set_caption("Capture The Flag")
 clock = pygame.time.Clock()
 running = True
 plugged = False
@@ -22,6 +22,7 @@ start_time = time.time()
 path = 'DaqCpp/record/pose.csv'
 arr = []
 arr1 = []
+
 
 
 
@@ -41,7 +42,7 @@ else:
 player_score = 0
 defender_score = 0
 a = 0
-font = pygame.font.Font('freesansbold.ttf', 32)
+font = pygame.font.Font('freesansbold.ttf', 26)
 textX = 945
 textY = 120
 timer = time.time()
@@ -76,6 +77,8 @@ x = 700
 y = 50
 x1 = 700
 y1 = 600
+actualX = 0
+actualY = 0
 # initial velocity of players
 v_x = 0
 v_y = 0
@@ -112,18 +115,29 @@ def calc_newPos(v_x, v_y, x, y):
 # defender: the time elapsed (or trial time)
 def draw_grid():
     blockSize = 133  # Set the size of the grid block
-    for x in range(0, 665, blockSize):
-        for y in range(666 - blockSize, -1, -blockSize):
-            rect = pygame.Rect(x, y, blockSize, blockSize)
-            pygame.draw.rect(screen, (0, 0, 0), rect, 1)
+   # for x in range(0, 665, blockSize):
+       # for y in range(666 - blockSize, -1, -blockSize):
+            #rect = pygame.Rect(x, y, blockSize, blockSize)
+            #pygame.draw.rect(screen, (0, 0, 0), rect, 1)
     #pygame.draw.rect(screen, (91, 219, 68), (532, 666, 134, 134), 2)
-    pygame.draw.rect(screen, (91, 219, 68), (665, 532, 134, 134), 2)
+    pygame.draw.rect(screen, (0,0,0), (665, 0, 2, 665), 1)
+    pygame.draw.rect(screen, (0,0,0), (0, 0, 665, 2), 1)
+    pygame.draw.rect(screen, (0,0,0), (0, 0, 2, 670), 1)
+    pygame.draw.rect(screen, (0,0,0), (0, 668, 665, 2), 1)
+    pygame.draw.rect(screen, (91, 219, 68), (665, 532, 134, 139), 2)
     pygame.draw.rect(screen, (0, 128, 255), (665, 0, 134, 134), 2)
 def fill_grid():
     # Fill the grid with the colors
     blockSize = 50  # Set the size of the grid block
-    new_block = Block((255, 0, 0), blockSize, blockSize, random.choice(randx), random.choice(randy))
+    x = random.choice(randx)
+    y = random.choice(randy)
+    global blockX
+    global blockY
+    blockX = x
+    blockY = y
+    new_block = Block((255, 0, 0), blockSize, blockSize, x, y)
     block_group.add(new_block)
+    
 
 def show_score1(x, y):
     score = font.render("Player Score: " + str(player_score), True, (255, 0, 0))
@@ -140,6 +154,11 @@ def show_time():
 def show_trial():
     score = font.render("Trial: " + str(trial), True, (0, 0, 0))
     screen.blit(score, (textX, 500))
+
+def show_warning(): 
+    font1 = pygame.font.Font('freesansbold.ttf', 22)
+    score = font1.render("Please Return to Home Position", True, (0, 140, 140))
+    screen.blit(score, (800, 400))
 
 def calc_time():
     return int(time.time() - timer)
@@ -185,6 +204,7 @@ while(1==1):
     fill_grid()
     draw_grid()
     block_group.draw(screen)
+    
     break
 
 def draw_text(text, font, text_col, x, y):
@@ -208,6 +228,11 @@ def isSafe_player(x, y):
     else:
         return False
     
+def isSafe_player1(x, y):
+    if x>700 and y>532:
+        return True
+    else:
+        return False
     
 def checkBounds(x, y, player):
     if player:
@@ -279,10 +304,13 @@ while running:
     player1.topleft = (x1, y1)
     if not captured:
         block_group.draw(screen)
+        pygame.draw.circle(screen, (0, 255, 0), (blockX, blockY), 150, 5)
+        pygame.draw.circle(screen, (0, 0, 255), (blockX, blockY), 80, 3)
     draw_grid()
+    
     pygame.draw.rect(screen, color, player)
     pygame.draw.rect(screen, (0, 255, 0), player1)
-
+    
     # make a 4 by 1 matrix of the joystick inputs
     """if plugged:
         arr = np.array([checkDrift(joysticks[0].get_axis(0)), checkDrift(joysticks[0].get_axis(1)), checkDrift(joysticks[0].get_axis(2)), checkDrift(joysticks[0].get_axis(3))])
@@ -292,8 +320,9 @@ while running:
    
     if (newarr.shape == (21, 1)):
         x, y = combine_inputs(newarr)
-        x = x*150
-        y = y*150
+        actualX, actualY = combine_inputs(newarr)
+        x = x*200
+        y = y*200
         
         #v_x1, v_y1 = combine_inputs(arr1)
     
@@ -318,15 +347,9 @@ while running:
             draw_grid()
             fill_grid()
 
-    """if (np.linalg.norm(np.array([x, y]) - np.array([x1, y1])) < 30):
-        captured = False
-        color = (0, 0, 255)
-        timer = time.time()
-        x = 700
-        y = 50
-        x1 = 700
-        y1 = 600
-        trial += 1"""
+    if (np.linalg.norm(np.array([x1, y1]) - np.array([blockX, blockY])) < 100):
+        x1 -=5
+        y1 -= 5
 
     """sc = calc_score1()
         s.kill()
@@ -356,17 +379,15 @@ while running:
        timer = time.time()
 
 
-    if (calc_time() > 20):
-        x = 700
-        y = 50
-        player.topleft=(x,y)
-        
-        x1 = 700
-        y1 = 600
-        captured = False
-        color = (0, 0, 255)
-        time.sleep(5)
+    if (calc_time() > 20 and isSafe_player(x, y)==False):
+        show_warning()
+    elif (calc_time() > 20 and isSafe_player(x, y) == True):
+        captured = False 
+        color = (0, 0, 255) 
         timer = time.time()
+        trial += 1
+
+        #timer = time.time()
     
     clock.tick(60)
     point = pygame.mouse.get_pos()
@@ -375,6 +396,7 @@ while running:
     show_time()
     show_trial()
     pygame.display.flip()
+    
     screen.fill((255, 255, 255))
 
 pygame.quit()
