@@ -378,3 +378,13 @@ while running:
     screen.fill((255, 255, 255))
 
 pygame.quit()
+
+
+
+# Saving data 
+# Calibration ()
+# Manual home position 
+# Bounds for Flag and Home position of player 
+# Actual x,y and displayed x,y 
+# No time limit for trial, message to tell both players to go back to home position before new trial starts 
+# Circle around flag and attacker 
