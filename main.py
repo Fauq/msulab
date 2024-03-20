@@ -7,6 +7,7 @@ import json
 import csv
 import pandas as pd
 import os
+import pickle
 
 pygame.init()
 screen = pygame.display.set_mode((1150, 670))
@@ -140,20 +141,30 @@ def fill_grid():
     
 
 def show_score1(x, y):
-    score = font.render("Player Score: " + str(player_score), True, (255, 0, 0))
-    screen.blit(score, (x-75, y))
+    _scoreStr = font.render("Player Score: ", True, (0,0,0))
+    score = font.render(str(player_score), True, (0, 0, 255))
+    screen.blit(score, (x+80, y+2))
+    screen.blit(_scoreStr,(x-100, y))
 
 def show_score2(x, y):
-    score = font.render("Defender Score: " + str(defender_score), True, (255, 0, 0))
-    screen.blit(score, (x-95, y+50))
+    _scoreStr = font.render("Defender Score: ", True, (0,0,0))
+    score = font.render(str(defender_score), True, (0, 255, 0))
+    screen.blit(score, (x+120, y+52))
+    screen.blit(_scoreStr, (x-100, y+50))
 
 def show_time():
-    score = font.render("Time: " + str(int(time.time() - timer)), True, (0, 0, 0))
-    screen.blit(score, (textX, textY-50))
+    _time = int(time.time() - timer)
+    _timeStr = font.render("Time Elapsed: ", True, (0,0,0))
+    if (_time < 20):
+        score = font.render(str(int(time.time() - timer)), True, (0, 0, 0))
+    else:
+        score = font.render(str(int(time.time() - timer)), True, (255, 0, 0))
+    screen.blit(score, (1040, textY-50))
+    screen.blit(_timeStr, (textX-100, textY-50))
 
 def show_trial():
     score = font.render("Trial: " + str(trial), True, (0, 0, 0))
-    screen.blit(score, (textX, 500))
+    screen.blit(score, (844, 22))
 
 def show_warning(): 
     font1 = pygame.font.Font('freesansbold.ttf', 22)
@@ -274,12 +285,13 @@ while running:
 
     if (arr.shape == (21,)):
         newarr = arr.reshape(21, 1)
-    if plugged and time.time() - timer >= 0.01:
+    if time.time() - timer >= 0.01:
         game_data.append( {
-            'joystick': [joysticks[0].get_axis(0), joysticks[0].get_axis(1), joysticks[0].get_axis(2), joysticks[0].get_axis(3)],
-            'velocity': [v_x, v_y, v_x1, v_y1],
+            #'joystick': [joysticks[0].get_axis(0), joysticks[0].get_axis(1), joysticks[0].get_axis(2), joysticks[0].get_axis(3)],
+            #'velocity': [v_x, v_y, v_x1, v_y1],
             'position': [(x, y), (x1, y1)],
             'flag': block_group.sprites()[0].rect.center,
+            'trial': trial,
         })
     
     start_time = time.time()
@@ -287,7 +299,6 @@ while running:
     if block_group.sprites():
         s = block_group.sprites()[0]
     #control mouse with joystick
-    draw_text("Controllers: " + str(pygame.joystick.get_count()), font, pygame.Color("black"), 900, 10)
     ##x, y = calc_newPos(v_x, v_y, x, y)
     ##x1, y1 = calc_newPos(v_x1, v_y1, x1, y1)
 
@@ -347,17 +358,18 @@ while running:
             draw_grid()
             fill_grid()
 
-    if (np.linalg.norm(np.array([x1, y1]) - np.array([blockX, blockY])) < 100):
-        x1 -=5
-        y1 -= 5
-
-    """sc = calc_score1()
-        s.kill()
-        screen.fill((255, 255, 255))
-        a = 0
-        draw_grid()
-        fill_grid()
-        score_value += sc"""
+    if (np.linalg.norm(np.array([x1, y1]) - np.array([blockX, blockY])) < 150):
+        _theta = atan2((y1-blockY)/(x1-blockX))
+        x1 = 150*math.cos(_theta)
+        y1 = 150*math.sin(_theta)
+        
+   
+#    if (np.linalg.norm(np.array([x1, y1])-np.array([x, y])) < 30):
+ #       captured = False
+  #      color = (0, 0, 255)
+        
+  #      show_warning()
+    
     # second controller
     # safe zone
     if isSafe_player(x, y):
@@ -379,9 +391,7 @@ while running:
        timer = time.time()
 
 
-    if (calc_time() > 20 and isSafe_player(x, y)==False):
-        show_warning()
-    elif (calc_time() > 20 and isSafe_player(x, y) == True):
+    if (isSafe_player(x, y) == True):
         captured = False 
         color = (0, 0, 255) 
         timer = time.time()
@@ -399,6 +409,8 @@ while running:
     
     screen.fill((255, 255, 255))
 
+with open ('data.pkl', 'wb') as f:
+    pickle.dump(game_data, f)
 pygame.quit()
 
 
