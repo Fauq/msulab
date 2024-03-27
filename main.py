@@ -129,6 +129,7 @@ def draw_grid():
     pygame.draw.rect(screen, (0,0,0), (0, 668, 665, 2), 1)
     pygame.draw.rect(screen, (91, 219, 68), (665, 532, 134, 139), 2)
     pygame.draw.rect(screen, (0, 128, 255), (665, 0, 134, 134), 2)
+    pygame.draw.arc(screen, (0, 255, 0), (466, -198, 400, 400), math.pi, (3*math.pi)/2, 2)
 def fill_grid():
     # Fill the grid with the colors
     blockSize = 50  # Set the size of the grid block
@@ -376,6 +377,17 @@ while running:
         print(x1)
         y1 = blockY + 151*math.sin(_theta)
         print(y1)
+
+    if (np.linalg.norm(np.array([x1, y1]) - np.array([666, 0])) < 200): 
+        _theta = atan2((y1-0),(x1-666))
+        x1 = 666 + 201*math.cos(_theta)
+        y1 = 0 + 201*math.sin(_theta)
+
+
+    if (np.linalg.norm(np.array([x1, y1]) - np.array([x, y])) < 25):
+        captured = False
+        color = (0, 0, 255)
+        show_warning()
         
    
 #    if (np.linalg.norm(np.array([x1, y1])-np.array([x, y])) < 30):
@@ -386,7 +398,7 @@ while running:
     
     # second controller
     # safe zone
-    if isSafe_player(x, y):
+    if isSafe_player(x, y) == True and isSafe_player1(x1, y1) == True:
         trial += 1
         player_score += (20-int(time.time() - timer))
         x1 = 700
@@ -404,7 +416,7 @@ while running:
     if (x > 665 and y < 134 and x1 > 665 and y1 > 532):
        timer = time.time()
 
-
+    """
     if (isSafe_player(x, y) == True):
         captured = False 
         color = (0, 0, 255) 
@@ -412,7 +424,7 @@ while running:
         trial += 1
 
         #timer = time.time()
-    
+    """
     clock.tick(60)
     point = pygame.mouse.get_pos()
     show_score1(textX, textY)
