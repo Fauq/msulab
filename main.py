@@ -24,6 +24,7 @@ start_time = time.time()
 path = 'DaqCpp/record/pose.csv'
 arr = []
 arr1 = []
+attackerCaptured = False 
 
 
 
@@ -226,7 +227,6 @@ def draw_text(text, font, text_col, x, y):
   screen.blit(img, (x, y))
 
 def combine_inputs(arr):
-    print(m_arr @ arr)
     return m_arr @ arr
 
 def combine_inputs1(arr):
@@ -285,16 +285,16 @@ def checkBounds(x, y, player):
 
 
 while running:
-   # arr = readValues()
-   # arr = np.array(arr)
-   # arr = arr.astype(np.float64)
+    arr = readValues()
+    arr = np.array(arr)
+    arr = arr.astype(np.float64)
 
-    """ 
+ 
     if (arr.shape == (21,)):
         newarr = arr.reshape(21, 1)
-        """
+        
    
-    if time.time() - timer >= 0.01:
+    if time.time() - timer >= 0.01 and block_group.sprites():
         game_data.append( {
             #'joystick': [joysticks[0].get_axis(0), joysticks[0].get_axis(1), joysticks[0].get_axis(2), joysticks[0].get_axis(3)],
             #'velocity': [v_x, v_y, v_x1, v_y1],
@@ -323,11 +323,25 @@ while running:
     
     player.topleft = (x, y)
     player1.center = (x1, y1)
-    if not captured:
-        block_group.draw(screen)
-        pygame.draw.circle(screen, (0, 255, 0), (blockX, blockY), 150, 5)
-        pygame.draw.circle(screen, (0, 0, 255), (blockX, blockY), 80, 3)
-    draw_grid()
+    if attackerCaptured: 
+        s.kill()
+        screen.fill((255, 255, 255))
+        draw_grid()
+        show_warning()
+        if isSafe_player(x, y) == True and isSafe_player1(x1, y1) == True:
+            trial += 1
+            player_score += (20-int(time.time() - timer))
+            captured = False
+            attackerCaptured = False
+            timer = time.time()
+            color = (0, 0, 255)
+            a = 0
+            block_group.draw(screen)
+    elif not captured and not attackerCaptured:
+            block_group.draw(screen)
+            pygame.draw.circle(screen, (0, 255, 0), (blockX, blockY), 150, 5)
+            pygame.draw.circle(screen, (0, 0, 255), (blockX, blockY), 80, 3)
+            draw_grid()
     
     pygame.draw.rect(screen, color, player)
     pygame.draw.rect(screen, (0, 255, 0), player1)
@@ -339,7 +353,7 @@ while running:
     if plugged:
         v_x1, v_y1 = combine_inputs1(arr1)
     # make x and y the outputs of the matrix multiplication
-    """
+    
     if (newarr.shape == (21, 1)):
         x, y = combine_inputs(newarr)
         actualX, actualY = combine_inputs(newarr)
@@ -347,7 +361,7 @@ while running:
         y = y*200
         
         #v_x1, v_y1 = combine_inputs(arr1)
-    """
+    
     x, y = checkBounds(x, y, True)
     x1, y1 = checkBounds(x1, y1, False)
 
@@ -359,7 +373,7 @@ while running:
             print("Joystick connected")
 
     # problem, block spawns in the same place as the last one
-    if (s.checkMouse(player.topleft)):
+    if (s.checkMouse(player.topleft) and not attackerCaptured):
         if not captured:
             captured = True
             color = (255, 0, 0)
@@ -382,12 +396,17 @@ while running:
         _theta = atan2((y1-0),(x1-666))
         x1 = 666 + 201*math.cos(_theta)
         y1 = 0 + 201*math.sin(_theta)
-
-
-    if (np.linalg.norm(np.array([x1, y1]) - np.array([x, y])) < 25):
+    
+    
+    
+    if (np.linalg.norm(np.array([x1, y1]) - np.array([int(x), int(y)])) < 25):
         captured = False
         color = (0, 0, 255)
         show_warning()
+        attackerCaptured = True
+        x1 = 700
+        y1 = 600
+    
         
    
 #    if (np.linalg.norm(np.array([x1, y1])-np.array([x, y])) < 30):
